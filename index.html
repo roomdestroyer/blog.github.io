@@ -147,6 +147,133 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/01/OpenStack%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog.github.io/2022/04/01/OpenStack%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">DevStack 配置过程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-01 11:21:24 / Modified: 18:05:58" itemprop="dateCreated datePublished" datetime="2022-04-01T11:21:24+08:00">2022-04-01</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="OpenStack-–-DevStack-配置过程"><a href="#OpenStack-–-DevStack-配置过程" class="headerlink" title="OpenStack – DevStack 配置过程"></a>OpenStack – DevStack 配置过程</h4><hr>
+<ol>
+<li><p><strong>环境准备：</strong></p>
+<ul>
+<li>在腾讯云中买一台地点在海外的服务器，按需计费，配置内存 &gt;&#x3D; 16 GB, 使用 XShell 连接远程服务器。</li>
+</ul>
+</li>
+<li><p><strong>DevStack 部署：</strong></p>
+<blockquote>
+<p>DevStack 是一组脚本，用于从 git 源代码中快速部署 OpenStack 的完整环境，并且作为 OpenStack 项目大部分功能测试的基础。由于 DevStack 在安装过程中会对系统进行重大修改，会肆意地安装和卸载一些东西，因此最好仅在用于专门用途的虚拟机中部署它。</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><p>在 DevStack 支持的众多操作系统中，<code>Ubuntu 20.04(Focal Fossa)</code> 是经过最多测试，最容易安装成功的。</p>
+</li>
+<li><p>创建一个单独的 <code>stack</code> 用户来运行 <code>DevStack</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">userdel stack &amp;&amp; sudo useradd -s /bin/bash -d /opt/stack -m stack</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于该用户将对系统进行许多修改，因此它应该具有 <code>sudo</code> 权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;stack ALL=(ALL) NOPASSWD: ALL&quot; | sudo tee /etc/sudoers.d/stack</span><br><span class="line">sudo -u stack -i</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下载 <code>DevStack</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://opendev.org/openstack/devstack</span><br><span class="line">cd devstack</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>该 <code>devstack</code> 仓库中包含一个安装 OpenStack 的脚本和配置文件的模板。</p>
+</blockquote>
+</li>
+<li><p>创建一个 <code>local.conf</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">[[local|localrc]]</span><br><span class="line"></span><br><span class="line">HOST_IP=43.156.24.8</span><br><span class="line">SERVICE_HOST=$HOST_IP</span><br><span class="line"></span><br><span class="line">ADMIN_PASSWORD=password</span><br><span class="line">SERVICE_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line">SERVICE_TOKEN=$ADMIN_PASSWORD</span><br><span class="line">RABBIT_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line">DATABASE_PASSWORD=$ADMIN_PASSWORD</span><br><span class="line"></span><br><span class="line"># Services</span><br><span class="line">ENABLED_SERVICES=rabbit,mysql,key</span><br><span class="line">ENABLED_SERVICES+=,n-api,n-crt,n-obj,n-cpu,n-cond,n-sch,n-novnc,n-cauth</span><br><span class="line"></span><br><span class="line">#Neutron Services</span><br><span class="line">ENABLED_SERVICES+=,neutron,q-svc,q-agt,q-dhcp,q-l3,q-meta,q-lbaas</span><br><span class="line"></span><br><span class="line">#Swift Services</span><br><span class="line">ENABLED_SERVICES+=,s-proxy,s-object,s-container,s-account</span><br><span class="line"></span><br><span class="line">#Glance Services</span><br><span class="line">ENABLED_SERVICES+=,g-api,g-reg</span><br><span class="line"></span><br><span class="line">#Cinder Services</span><br><span class="line">ENABLED_SERVICES+=,cinder,c-api,c-vol,c-sch,c-bak</span><br><span class="line"></span><br><span class="line">#Heat Services</span><br><span class="line">ENABLED_SERVICES+=,heat,h-api,h-api-cfn,h-api-cw,h-eng</span><br><span class="line"></span><br><span class="line">#Trove Services</span><br><span class="line">ENABLED_SERVICES+=,trove,tr-api,tr-tmgr,tr-cond</span><br><span class="line"></span><br><span class="line">#Horizon Services</span><br><span class="line">ENABLED_SERVICES+=,horizon</span><br><span class="line"></span><br><span class="line"># Enable Sahara</span><br><span class="line">ENABLED_SERVICES+=,sahara</span><br><span class="line"></span><br><span class="line"># Enable Ceilometer</span><br><span class="line">ENABLED_SERVICES+=ceilometer-acentral,ceilometer-collector,ceilometer-api,ceilometer-acompute,ceilometer-alarm-singleton,ceilometer-alarm-notifier</span><br><span class="line"></span><br><span class="line"># Images</span><br><span class="line"># Use this image when creating test instances</span><br><span class="line">IMAGE_URLS+=&quot;,http://cdn.download.cirros-cloud.net/0.3.2/cirros-0.3.2-x86_64-disk.img&quot;</span><br><span class="line"># Use this image when working with Orchestration (Heat)</span><br><span class="line">IMAGE_URLS+=&quot;,http://fedorapeople.org/groups/heat/prebuilt-jeos-images/F17-x86_64-cfntools.qcow2&quot;</span><br><span class="line"></span><br><span class="line"># Branches</span><br><span class="line">KEYSTONE_BRANCH=stable/juno</span><br><span class="line">NOVA_BRANCH=stable/juno</span><br><span class="line">NEUTRON_BRANCH=stable/juno</span><br><span class="line">SWIFT_BRANCH=stable/juno</span><br><span class="line">GLANCE_BRANCH=stable/juno</span><br><span class="line">CINDER_BRANCH=stable/juno</span><br><span class="line">HEAT_BRANCH=stable/juno</span><br><span class="line">TROVE_BRANCH=stable/juno</span><br><span class="line">HORIZON_BRANCH=stable/juno</span><br><span class="line"></span><br><span class="line"># Swift Configuration</span><br><span class="line">SWIFT_REPLICAS=1</span><br><span class="line">SWIFT_HASH=66a3d6b56c1f479c8b4e70ab5c2000f5</span><br><span class="line"></span><br><span class="line">PUBLIC_BRIDGE=br-int</span><br><span class="line">OVS_PHYSICAL_BRIDGE=br-ex</span><br><span class="line"></span><br><span class="line"># Neutron - Load Balancing</span><br><span class="line">ENABLED_SERVICES+=,q-lbaas</span><br><span class="line"></span><br><span class="line"># Neutron - VPN as a Service</span><br><span class="line">ENABLED_SERVICES+=,q-vpn</span><br><span class="line"></span><br><span class="line"># Neutron - Firewall as a Service</span><br><span class="line">ENABLED_SERVICES+=,q-fwaas</span><br><span class="line"></span><br><span class="line"># VLAN configuration</span><br><span class="line">Q_PLUGIN=ml2</span><br><span class="line">ENABLE_TENANT_VLANS=True</span><br><span class="line"></span><br><span class="line"># GRE tunnel configuration</span><br><span class="line">Q_PLUGIN=ml2</span><br><span class="line">ENABLE_TENANT_TUNNELS=True</span><br><span class="line"></span><br><span class="line"># VXLAN tunnel configuration</span><br><span class="line">Q_PLUGIN=ml2</span><br><span class="line">Q_ML2_TENANT_NETWORK_TYPE=vxlan</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>DevStack 通过该配置文件来启动，关于该文件的配置教程，详见 <code>https://docs.openstack.org/devstack/latest/configuration.html</code></p>
+</blockquote>
+</li>
+<li><p>开始安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./stack.sh</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>整个过程大概 1h</p>
+</blockquote>
+</li>
+<li><p>安装结束：</p>
+<p><img src="https://s2.loli.net/2022/04/01/QBanCj43DiYSgbZ.png" alt="image-20220401170847084"></p>
+</li>
+</ul>
+<ol start="3">
+<li><p><strong>卸载 DevStack：</strong></p>
+<p>当初次部署 DevStack 后，下次想修改 <code>local.conf</code> 并重新配置环境可能会遇到很多意想不到的错误，因此此前 DevStack 已经对系统进行了许多修改。为了删除该配置环境，按以下方法操作：</p>
+</li>
+</ol>
+<ul>
+<li><p>备份 <code>local.conf</code> 文件</p>
+</li>
+<li><p>卸载 DevStack：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /opt/stack/devstack/ &amp;&amp; ./unstack.sh &amp;&amp; ./clean.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~ &amp;&amp; sudo rm -rf /opt/stack/devstack</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新下载 DevStack：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https://opendev.org/openstack/devstack</span><br><span class="line">cd devstack</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建 <code>local.conf</code></p>
+</li>
+<li><p>开始安装：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./stack.sh</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/03/25/SmartContractDeploying/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -611,7 +738,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/blog.github.io/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
