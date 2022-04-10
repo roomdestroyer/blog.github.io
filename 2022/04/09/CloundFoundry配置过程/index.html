@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"github.com","root":"/blog.github.io/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="CloudFoundry 环境部署安装 NodesCloud Foundry由多个系统组件组成(云控制器、健康经理、dea、路由器等)。 这些组件可以在一个单个虚拟机&#x2F;单个操作系统，或者可以跨多个机器&#x2F;虚拟机。   出于开发目的，首选的环境是运行所有核心单个虚拟机中的组件然后从外部与系统交互虚拟机通过SSH隧道连接。 预定义的域 *.vcap。 Me 映射到本地主机，所以当使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CloudFoundry 配置过程">
+<meta property="og:url" content="https://github.com/roomdestroyer/2022/04/09/CloundFoundry%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Zhou Jin&#39;s Blog">
+<meta property="og:description" content="CloudFoundry 环境部署安装 NodesCloud Foundry由多个系统组件组成(云控制器、健康经理、dea、路由器等)。 这些组件可以在一个单个虚拟机&#x2F;单个操作系统，或者可以跨多个机器&#x2F;虚拟机。   出于开发目的，首选的环境是运行所有核心单个虚拟机中的组件然后从外部与系统交互虚拟机通过SSH隧道连接。 预定义的域 *.vcap。 Me 映射到本地主机，所以当使用">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2022/04/10/uNJfK24ZkDzvMd9.png">
+<meta property="article:published_time" content="2022-04-09T04:11:43.000Z">
+<meta property="article:modified_time" content="2022-04-10T08:22:17.499Z">
+<meta property="article:author" content="Zhou Jin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/04/10/uNJfK24ZkDzvMd9.png">
+
+<link rel="canonical" href="https://github.com/roomdestroyer/2022/04/09/CloundFoundry%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CloudFoundry 配置过程 | Zhou Jin's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Zhou Jin's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/09/CloundFoundry%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CloudFoundry 配置过程
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-09 12:11:43" itemprop="dateCreated datePublished" datetime="2022-04-09T12:11:43+08:00">2022-04-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-10 16:22:17" itemprop="dateModified" datetime="2022-04-10T16:22:17+08:00">2022-04-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="CloudFoundry-环境部署"><a href="#CloudFoundry-环境部署" class="headerlink" title="CloudFoundry 环境部署"></a>CloudFoundry 环境部署</h1><h2 id="安装-Nodes"><a href="#安装-Nodes" class="headerlink" title="安装 Nodes"></a>安装 Nodes</h2><p>Cloud Foundry由多个系统组件组成(云控制器、健康经理、dea、路由器等)。 这些组件可以在一个单个虚拟机&#x2F;单个操作系统，或者可以跨多个机器&#x2F;虚拟机。  </p>
+<p>出于开发目的，首选的环境是运行所有核心单个虚拟机中的组件然后从外部与系统交互虚拟机通过SSH隧道连接。 预定义的域 <code>*.vcap。 Me</code> 映射到本地主机，所以当使用这个设置时，最终的结果就是开发环境  <a target="_blank" rel="noopener" href="http://api.vcap.me/">http://api.vcap.me</a>。  </p>
+<p>对于大规模或多虚拟机部署，系统具有足够的灵活性，可以将系统组件放置在多个虚拟机上，运行给定的多个节点类型(如8台路由器，4台云控制器等) ，下面的安装过程将说明对于单个虚拟机安装流程。  </p>
+<h2 id="安装过程"><a href="#安装过程" class="headerlink" title="安装过程"></a>安装过程</h2><p>有两种安装VCAP的方法。一种是手动过程，如果想了解其中的细节，可以选择这样做；另一个是由社区贡献的自动化过程，在这两种情况下，都需要从虚拟机Ubuntu开始安装server VM.服务器VM。</p>
+<h3 id="Step-1-使用ssh创建一个原始虚拟机"><a href="#Step-1-使用ssh创建一个原始虚拟机" class="headerlink" title="Step 1: 使用ssh创建一个原始虚拟机"></a>Step 1: 使用ssh创建一个原始虚拟机</h3><ul>
+<li><p>使用原始的Ubuntu 10.04.4服务器64位镜像创建一个虚拟机 <a target="_blank" rel="noopener" href="http://releases.ubuntu.com/">download here</a></p>
+</li>
+<li><p>为虚拟机设置1G或更多的内存</p>
+</li>
+<li><p>启用远程访问，安装ssh。安装ssh:  </p>
+<p>  sudo apt-get install openssh-server</p>
+</li>
+</ul>
+<h4 id="Step-2-运行自动安装过程"><a href="#Step-2-运行自动安装过程" class="headerlink" title="Step 2: 运行自动安装过程"></a>Step 2: 运行自动安装过程</h4><p>运行安装脚本， 整个过程大约需要半个小时： </p>
+<pre><code>sudo apt-get install curl
+bash &lt; &lt;(curl -s -k -B https://raw.github.com/cloudfoundry/vcap/master/dev_setup/bin/vcap_dev_setup)
+</code></pre>
+<p>注意：自动设置不会自动启动系统。 安装完成后，应该退出当前的shell，重新启动一个新的shell，然后继续下面的步骤  ：</p>
+<h4 id="Step-3-启动系统"><a href="#Step-3-启动系统" class="headerlink" title="Step 3: 启动系统"></a>Step 3: 启动系统</h4><pre><code>~/cloudfoundry/vcap/dev_setup/bin/vcap_dev start
+</code></pre>
+<h4 id="Step-4-可选，针对mac-x2F-linux用户，创建本地ssh隧道"><a href="#Step-4-可选，针对mac-x2F-linux用户，创建本地ssh隧道" class="headerlink" title="Step 4: 可选，针对mac&#x2F;linux用户，创建本地ssh隧道"></a>Step 4: <em>可选，针对mac&#x2F;linux用户</em>，创建本地ssh隧道</h4><p>从你的虚拟机，运行 <code>ifconfig</code> ，并注意eth0 IP地址，例如：<code>192.168.252.130</code></p>
+<p>Now go to your mac terminal window and verify that you can connect with SSH:</p>
+<pre><code>ssh &lt;your VM user&gt;@&lt;VM IP address&gt;
+</code></pre>
+<p>现在进入你的mac终端窗口，验证你可以连接SSH:  </p>
+<pre><code>sudo ssh -L &lt;local-port&gt;:&lt;VM IP address&gt;:80 &lt;your VM user&gt;@&lt;VM IP address&gt; -N
+</code></pre>
+<p>如果还没有运行本地web服务器，可以使用端口80作为本地端口，或使用8080或其他公共HTTP端口。  </p>
+<p> 一旦这样做，从mac，vm， <code>api.vcap.me</code> 和 <code>*.vcap.me*</code> 将映射到本地主机，本地主机将映射到正在运行的Cloud Foundry实例。  </p>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><h3 id="Step-5-验证是否可以连接并通过测试"><a href="#Step-5-验证是否可以连接并通过测试" class="headerlink" title="Step 5: 验证是否可以连接并通过测试"></a>Step 5: 验证是否可以连接并通过测试</h3><h4 id="在虚拟机控制台，或从mac本地隧道中输入："><a href="#在虚拟机控制台，或从mac本地隧道中输入：" class="headerlink" title="在虚拟机控制台，或从mac本地隧道中输入："></a>在虚拟机控制台，或从mac本地隧道中输入：</h4><pre><code>vmc target api.vcap.me
+vmc info
+</code></pre>
+<p>注意:如果您正在使用隧道并选择一个本地端口而不是80，需要修改目标，将其包含在这里，如“api.vcap.me:8080”。  </p>
+<ul>
+<li><p>这应该产生以下大致的结果:</p>
+<p>  VMware’s Cloud Application Platform<br>  For support visit <a href="mailto:&#x73;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#x63;&#108;&#111;&#x75;&#100;&#102;&#x6f;&#x75;&#110;&#x64;&#x72;&#121;&#46;&#99;&#111;&#x6d;">&#x73;&#117;&#x70;&#x70;&#x6f;&#114;&#116;&#x40;&#x63;&#108;&#111;&#x75;&#100;&#102;&#x6f;&#x75;&#110;&#x64;&#x72;&#121;&#46;&#99;&#111;&#x6d;</a></p>
+<p>  Target:   <a target="_blank" rel="noopener" href="http://api.vcap.me/">http://api.vcap.me</a> (v0.999)<br>  Client:   v0.3.10</p>
+</li>
+<li><p>作为用户，可以从以下几个方面开始:</p>
+<p>  vmc register –email <a href="mailto:&#102;&#111;&#111;&#64;&#x62;&#x61;&#x72;&#x2e;&#x63;&#x6f;&#109;">&#102;&#111;&#111;&#64;&#x62;&#x61;&#x72;&#x2e;&#x63;&#x6f;&#109;</a> –passwd password<br>  vmc login –email <a href="mailto:&#x66;&#111;&#x6f;&#64;&#98;&#x61;&#114;&#46;&#99;&#111;&#109;">&#x66;&#111;&#x6f;&#64;&#98;&#x61;&#114;&#46;&#99;&#111;&#109;</a> –passwd password</p>
+</li>
+<li><p>获取帮助：</p>
+<p>  vmc help</p>
+</li>
+</ul>
+<h2 id="测试设置"><a href="#测试设置" class="headerlink" title="测试设置"></a>测试设置</h2><p>安装完系统后，可以运行以下Yeti案例，以确保主要功能是有效的。可以按照以下步骤运行Yeti案例:</p>
+<pre><code>cd cloudfoundry/vcap/tests
+./update  ## this is not required for running administrative test cases
+bundle exec rake full[1]
+</code></pre>
+<p>在第一次时，Yeti会提示你有关环境的信息:</p>
+<ul>
+<li>target</li>
+<li>test user&#x2F;test password</li>
+<li>admin user&#x2F;admin password</li>
+<li>target should be “api.vcap.me”.</li>
+<li>This information except password is saved to ~&#x2F;.bvt&#x2F;config.yml file.</li>
+<li>When run the second time around, Yeti will not prompt for the information again.</li>
+</ul>
+<h3 id="Step-6-确保可以运行一个简单的hello-world应用程序。"><a href="#Step-6-确保可以运行一个简单的hello-world应用程序。" class="headerlink" title="Step 6: 确保可以运行一个简单的hello world应用程序。"></a>Step 6: 确保可以运行一个简单的hello world应用程序。</h3><p>为测试应用程序创建一个空目录(我们称之为env)，并输入它。</p>
+<pre><code>mkdir env &amp;&amp; cd env
+</code></pre>
+<p>剪切并粘贴下面的应用程序到一个ruby文件(让我们说env.rb):</p>
+<pre><code>require &#39;rubygems&#39;
+require &#39;sinatra&#39;
+
+get &#39;/&#39; do
+  host = ENV[&#39;VCAP_APP_HOST&#39;]
+  port = ENV[&#39;VCAP_APP_PORT&#39;]
+  &quot;&lt;h1&gt;XXXXX Hello from the Cloud! via: #&#123;host&#125;:#&#123;port&#125;&lt;/h1&gt;&quot;
+end
+
+get &#39;/env&#39; do
+  res = &#39;&#39;
+  ENV.each do |k, v|
+    res &lt;&lt; &quot;#&#123;k&#125;: #&#123;v&#125;&lt;br/&gt;&quot;
+  end
+  res
+end
+</code></pre>
+<h4 id="创建并推送测试应用的4个实例版本，如下所示"><a href="#创建并推送测试应用的4个实例版本，如下所示" class="headerlink" title="创建并推送测试应用的4个实例版本，如下所示:"></a>创建并推送测试应用的4个实例版本，如下所示:</h4><pre><code>vmc push env --instances 4 --mem 64M --url env.vcap.me -n
+</code></pre>
+<h4 id="在浏览器中测试它"><a href="#在浏览器中测试它" class="headerlink" title="在浏览器中测试它:"></a>在浏览器中测试它:</h4><p><a target="_blank" rel="noopener" href="http://env.vcap.me/">http://env.vcap.me</a></p>
+<p>请注意，点击刷新将在每个刷新中显示不同的端口，反映不同的活动实例。</p>
+<h4 id="通过运行检查应用程序的状态"><a href="#通过运行检查应用程序的状态" class="headerlink" title="通过运行检查应用程序的状态:"></a>通过运行检查应用程序的状态:</h4><pre><code>vmc apps
+</code></pre>
+<h4 id="它应该会产生以下输出"><a href="#它应该会产生以下输出" class="headerlink" title="它应该会产生以下输出:"></a>它应该会产生以下输出:</h4><pre><code>+-------------+----+---------+-------------+----------+
+| Application | #  | Health  | URLS        | Services |
++-------------+----+---------+-------------+----------+
+| env         | 1  | RUNNING | env.vcap.me |          |
++-------------+----+---------+-------------+----------+
+</code></pre>
+<p><img src="https://s2.loli.net/2022/04/10/uNJfK24ZkDzvMd9.png" alt="image-20220410161937203"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog.github.io/2022/04/01/OpenStack%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" rel="prev" title="DevStack 配置过程">
+      <i class="fa fa-chevron-left"></i> DevStack 配置过程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CloudFoundry-%E7%8E%AF%E5%A2%83%E9%83%A8%E7%BD%B2"><span class="nav-number">1.</span> <span class="nav-text">CloudFoundry 环境部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-Nodes"><span class="nav-number">1.1.</span> <span class="nav-text">安装 Nodes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.</span> <span class="nav-text">安装过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-1-%E4%BD%BF%E7%94%A8ssh%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%8E%9F%E5%A7%8B%E8%99%9A%E6%8B%9F%E6%9C%BA"><span class="nav-number">1.2.1.</span> <span class="nav-text">Step 1: 使用ssh创建一个原始虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-%E8%BF%90%E8%A1%8C%E8%87%AA%E5%8A%A8%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">Step 2: 运行自动安装过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-3-%E5%90%AF%E5%8A%A8%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">Step 3: 启动系统</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-4-%E5%8F%AF%E9%80%89%EF%BC%8C%E9%92%88%E5%AF%B9mac-x2F-linux%E7%94%A8%E6%88%B7%EF%BC%8C%E5%88%9B%E5%BB%BA%E6%9C%AC%E5%9C%B0ssh%E9%9A%A7%E9%81%93"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">Step 4: 可选，针对mac&#x2F;linux用户，创建本地ssh隧道</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-5-%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E8%BF%9E%E6%8E%A5%E5%B9%B6%E9%80%9A%E8%BF%87%E6%B5%8B%E8%AF%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">Step 5: 验证是否可以连接并通过测试</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%8E%A7%E5%88%B6%E5%8F%B0%EF%BC%8C%E6%88%96%E4%BB%8Emac%E6%9C%AC%E5%9C%B0%E9%9A%A7%E9%81%93%E4%B8%AD%E8%BE%93%E5%85%A5%EF%BC%9A"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">在虚拟机控制台，或从mac本地隧道中输入：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">测试设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-6-%E7%A1%AE%E4%BF%9D%E5%8F%AF%E4%BB%A5%E8%BF%90%E8%A1%8C%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84hello-world%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E3%80%82"><span class="nav-number">1.4.1.</span> <span class="nav-text">Step 6: 确保可以运行一个简单的hello world应用程序。</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%B9%B6%E6%8E%A8%E9%80%81%E6%B5%8B%E8%AF%95%E5%BA%94%E7%94%A8%E7%9A%844%E4%B8%AA%E5%AE%9E%E4%BE%8B%E7%89%88%E6%9C%AC%EF%BC%8C%E5%A6%82%E4%B8%8B%E6%89%80%E7%A4%BA"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">创建并推送测试应用的4个实例版本，如下所示:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E4%B8%AD%E6%B5%8B%E8%AF%95%E5%AE%83"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">在浏览器中测试它:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E8%BF%87%E8%BF%90%E8%A1%8C%E6%A3%80%E6%9F%A5%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%8A%B6%E6%80%81"><span class="nav-number">1.4.1.3.</span> <span class="nav-text">通过运行检查应用程序的状态:</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%83%E5%BA%94%E8%AF%A5%E4%BC%9A%E4%BA%A7%E7%94%9F%E4%BB%A5%E4%B8%8B%E8%BE%93%E5%87%BA"><span class="nav-number">1.4.1.4.</span> <span class="nav-text">它应该会产生以下输出:</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhou Jin</p>
+  <div class="site-description" itemprop="description">View my github at @https://github.com/roomdestroyer</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog.github.io/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhou Jin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog.github.io/lib/anime.min.js"></script>
+  <script src="/blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog.github.io/js/utils.js"></script>
+
+<script src="/blog.github.io/js/motion.js"></script>
+
+
+<script src="/blog.github.io/js/schemes/muse.js"></script>
+
+
+<script src="/blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/blog.github.io/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/blog.github.io/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7}});</script></body>
+</html>
