@@ -147,6 +147,171 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/11/docker%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog.github.io/2022/04/11/docker%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Docker 配置过程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-11 12:39:19" itemprop="dateCreated datePublished" datetime="2022-04-11T12:39:19+08:00">2022-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-18 12:21:37" itemprop="dateModified" datetime="2022-04-18T12:21:37+08:00">2022-04-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="Docker-配置过程"><a href="#Docker-配置过程" class="headerlink" title="Docker 配置过程"></a>Docker 配置过程</h4><hr>
+<ol>
+<li><p>更新软件包缓存</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装需要的包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install apt-transport-https ca-certificates software-properties-common curl</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加 GPG 秘钥，并添加中科大 Docker-ce 软件源</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository &quot;deb [arch=amd64] https://mirrors.ustc.edu.cn/docker-ce/linux/ubuntu $(lsb_release -cs) stable&quot;</span><br></pre></td></tr></table></figure>
+
+<p>更新软件包缓存</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装 Docker-ce</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install docker-ce</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试运行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p>输出以下内容表示配置成功：</p>
+<p><img src="https://s2.loli.net/2022/04/11/xPblFJyZBca1mDr.png" alt="image-20220411125032631"></p>
+</li>
+</ol>
+<h4 id="Docker-基本使用"><a href="#Docker-基本使用" class="headerlink" title="Docker 基本使用"></a>Docker 基本使用</h4><hr>
+<ol>
+<li><p>查看 docker 镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>​         <img src="https://s2.loli.net/2022/04/11/PDpq2FXiBLSZyaG.png" alt="image-20220411125312074"></p>
+<ol start="2">
+<li><p>查看docker容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/04/11/aUlV3xQuHTLqyjB.png" alt="image-20220411125334731"></p>
+</li>
+</ol>
+<ul>
+<li>镜像与容器的关系：镜像是一个 linux 虚拟机，容器是启动虚拟机，每次启动的时候，是一个副本，是先把镜像复制一份后直接启动，启动不干扰镜像，一个镜像可以启动无数个容器。</li>
+</ul>
+<ol start="3">
+<li><p>启动 docker</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker start 容器名称</span><br><span class="line"># 或者 docker start 容器id</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>停止 docker</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop 容器名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入docker容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker attach 容器名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>从镜像启动一个容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -it image_name /bin/bash </span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启动一个停止的容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker start container_id</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>进入一个正在运行的容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker exec -it container_id /bin/bash</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重命名容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker rename old_container_name  new_container_name</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除容器</p>
+</li>
+</ol>
+   <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm container_id</span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li><p>删除镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi image_id</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拷贝宿主机的文件到docker容器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp [OPTIONS] dest_path container:src_path</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>拷贝docker容器中的文件到宿主机</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp [OPTIONS] container:src_path dest_path</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="Docker-打包-Flask-项目"><a href="#Docker-打包-Flask-项目" class="headerlink" title="Docker 打包 Flask 项目"></a>Docker 打包 Flask 项目</h4><hr>
+<ol>
+<li><p>拉取 python 镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull python</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>等待下载完成后，就可以在本地镜像列表里查到 python 的镜像</li>
+</ul>
+</li>
+<li><p>新建 Dockerfile 文件，输入以下配置</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">FROM python:latest</span><br><span class="line">WORKDIR /home/docker_test/sdunft</span><br><span class="line">　　 ADD . /home/docker_test/sdunft</span><br><span class="line">RUN pip3 install -r requirements.txt</span><br><span class="line">EXPOSE 9110</span><br><span class="line">ENV NAME SDUNFT</span><br><span class="line">CMD [&quot;bash&quot;,&quot;run.sh&quot;]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>其中，目录 &#x2F;home&#x2F;docker_test&#x2F;sdunft 是项目所在文件夹</p>
+</blockquote>
+</li>
+<li><p>创建镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t sdunft .</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看镜像</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo docker images</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/09/CloundFoundry%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -895,7 +1060,7 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/blog.github.io/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
