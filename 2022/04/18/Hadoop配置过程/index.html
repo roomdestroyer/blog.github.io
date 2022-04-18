@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog.github.io/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog.github.io/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog.github.io/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/blog.github.io/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog.github.io/css/main.css">
+
+
+<link rel="stylesheet" href="/blog.github.io/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"github.com","root":"/blog.github.io/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Hadoop 环境配置 Linux 环境输入以下命令查看 Ubuntu 版本信息： 1cat &#x2F;etc&#x2F;issue  系统环境显示如下： 1Ubuntu 20.04.4 LTS \n \l    第一步 - 安装 JavaHadoop 是用 Java 编写的，仅支持 Java 版本 8。Hadoop 版本 3.3 和最新版本还支持 Java 11。 12sudo apt update sudo a">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hadoop 环境配置">
+<meta property="og:url" content="https://github.com/roomdestroyer/2022/04/18/Hadoop%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Zhou Jin&#39;s Blog">
+<meta property="og:description" content="Hadoop 环境配置 Linux 环境输入以下命令查看 Ubuntu 版本信息： 1cat &#x2F;etc&#x2F;issue  系统环境显示如下： 1Ubuntu 20.04.4 LTS \n \l    第一步 - 安装 JavaHadoop 是用 Java 编写的，仅支持 Java 版本 8。Hadoop 版本 3.3 和最新版本还支持 Java 11。 12sudo apt update sudo a">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2022/04/18/4sFOCwP8nTuMhzt.png">
+<meta property="og:image" content="https://s2.loli.net/2022/04/18/1zKbkDYGO4sM8PI.png">
+<meta property="article:published_time" content="2022-04-18T11:11:24.000Z">
+<meta property="article:modified_time" content="2022-04-18T11:17:55.667Z">
+<meta property="article:author" content="Zhou Jin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2022/04/18/4sFOCwP8nTuMhzt.png">
+
+<link rel="canonical" href="https://github.com/roomdestroyer/2022/04/18/Hadoop%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Hadoop 环境配置 | Zhou Jin's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog.github.io/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Zhou Jin's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/blog.github.io/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/blog.github.io/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/18/Hadoop%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hadoop 环境配置
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-18 19:11:24 / Modified: 19:17:55" itemprop="dateCreated datePublished" datetime="2022-04-18T19:11:24+08:00">2022-04-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Hadoop-环境配置"><a href="#Hadoop-环境配置" class="headerlink" title="Hadoop 环境配置"></a>Hadoop 环境配置</h3><hr>
+<h4 id="Linux-环境"><a href="#Linux-环境" class="headerlink" title="Linux 环境"></a>Linux 环境</h4><p>输入以下命令查看 Ubuntu 版本信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat /etc/issue</span><br></pre></td></tr></table></figure>
+
+<p>系统环境显示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Ubuntu 20.04.4 LTS \n \l</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="第一步-安装-Java"><a href="#第一步-安装-Java" class="headerlink" title="第一步 - 安装 Java"></a>第一步 - 安装 Java</h4><p>Hadoop 是用 Java 编写的，仅支持 Java 版本 8。Hadoop 版本 3.3 和最新版本还支持 Java 11。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update </span><br><span class="line">sudo apt install openjdk-11-jdk</span><br></pre></td></tr></table></figure>
+
+<p>安装后，使用以下命令验证已安装的 Java 版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version </span><br></pre></td></tr></table></figure>
+
+<p>获取以下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openjdk version &quot;11.0.14.1&quot; 2022-02-08</span><br><span class="line">OpenJDK Runtime Environment (build 11.0.14.1+1-Ubuntu-0ubuntu1.20.04)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 11.0.14.1+1-Ubuntu-0ubuntu1.20.04, mixed mode, sharing)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="第二步-创建-Hadoop-用户"><a href="#第二步-创建-Hadoop-用户" class="headerlink" title="第二步 - 创建 Hadoop 用户"></a>第二步 - 创建 Hadoop 用户</h4><p>出于安全原因，创建一个单独的用户来运行 Hadoop 是个好主意。运行以下命令以创建一个名为 hadoop 的新用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo adduser hadoop </span><br></pre></td></tr></table></figure>
+
+<p>提供并确认新密码，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">Adding user `hadoop&#x27; ...</span><br><span class="line">Adding new group `hadoop&#x27; (1002) ...</span><br><span class="line">Adding new user `hadoop&#x27; (1002) with group `hadoop&#x27; ...</span><br><span class="line">Creating home directory `/home/hadoop&#x27; ...</span><br><span class="line">Copying files from `/etc/skel&#x27; ...</span><br><span class="line">New password:</span><br><span class="line">Retype new password:</span><br><span class="line">passwd: password updated successfully</span><br><span class="line">Changing the user information for hadoop</span><br><span class="line">Enter the new value, or press ENTER for the default</span><br><span class="line">        Full Name []:</span><br><span class="line">        Room Number []:</span><br><span class="line">        Work Phone []:</span><br><span class="line">        Home Phone []:</span><br><span class="line">        Other []:</span><br><span class="line">Is the information correct? [Y/n] y</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="第三步-配置基于-SSH-密钥的身份验证"><a href="#第三步-配置基于-SSH-密钥的身份验证" class="headerlink" title="第三步 - 配置基于 SSH 密钥的身份验证"></a>第三步 - 配置基于 SSH 密钥的身份验证</h4><p>接下来，需要为本地系统配置无密码 SSH 身份验证。首先，使用以下命令将用户更改为 hadoop：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su - hadoop </span><br></pre></td></tr></table></figure>
+
+<p>接下来，运行以下命令来生成公钥和私钥对：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa </span><br></pre></td></tr></table></figure>
+
+<p>要求输入文件名，只需一直按 Enter 即可完成该过程：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/home/hadoop/.ssh/id_rsa):</span><br><span class="line">Created directory &#x27;/home/hadoop/.ssh&#x27;.</span><br><span class="line">Enter passphrase (empty for no passphrase):</span><br><span class="line">Enter same passphrase again:</span><br><span class="line">Your identification has been saved in /home/hadoop/.ssh/id_rsa</span><br><span class="line">Your public key has been saved in /home/hadoop/.ssh/id_rsa.pub</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:QSa2syeISwP0hD+UXxxi0j9MSOrjKDGIbkfbM3ejyIk hadoop@ubuntu20</span><br><span class="line">The key&#x27;s randomart image is:</span><br><span class="line">+---[RSA 3072]----+</span><br><span class="line">| ..o++=.+        |</span><br><span class="line">|..oo++.O         |</span><br><span class="line">|. oo. B .        |</span><br><span class="line">|o..+ o * .       |</span><br><span class="line">|= ++o o S        |</span><br><span class="line">|.++o+  o         |</span><br><span class="line">|.+.+ + . o       |</span><br><span class="line">|o . o * o .      |</span><br><span class="line">|   E + .         |</span><br><span class="line">+----[SHA256]-----+</span><br></pre></td></tr></table></figure>
+
+<p>接下来，将生成的公钥从 id_rsa.pub 附加到 authorized_keys 并设置适当的权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys </span><br><span class="line">chmod 640 ~/.ssh/authorized_keys </span><br></pre></td></tr></table></figure>
+
+<p>接下来，使用以下命令验证无密码 SSH 身份验证：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh localhost </span><br></pre></td></tr></table></figure>
+
+<p>将被要求通过将 RSA 密钥添加到已知主机来验证主机。键入 yes 并按 Enter 以验证 localhost：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">The authenticity of host &#x27;localhost (127.0.0.1)&#x27; can&#x27;t be established.</span><br><span class="line">ECDSA key fingerprint is SHA256:JFqDVbM3zTPhUPgD5oMJ4ClviH6tzIRZ2GD3BdNqGMQ.</span><br><span class="line">Are you sure you want to continue connecting (yes/no/[fingerprint])? yes</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="第四步-安装-Hadoop"><a href="#第四步-安装-Hadoop" class="headerlink" title="第四步 - 安装 Hadoop"></a>第四步 - 安装 Hadoop</h4><p>首先，使用以下命令将用户更改为 hadoop：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">su - hadoop </span><br></pre></td></tr></table></figure>
+
+<p>接下来，使用 wget 命令下载最新版本的 Hadoop：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://downloads.apache.org/hadoop/common/hadoop-3.3.2/hadoop-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>下载后，解压下载的文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf hadoop-3.3.2.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>接下来，将提取的目录重命名为 hadoop：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv hadoop-3.3.2 hadoop</span><br></pre></td></tr></table></figure>
+
+<p>接下来，需要在系统上配置 Hadoop 和 Java 环境变量。使用 vim 打开 <strong>~&#x2F;.bashrc</strong> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>将以下行附加到文件中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64</span><br><span class="line">export HADOOP_HOME=/home/hadoop/hadoop</span><br><span class="line">export HADOOP_INSTALL=$HADOOP_HOME</span><br><span class="line">export HADOOP_MAPRED_HOME=$HADOOP_HOME</span><br><span class="line">export HADOOP_COMMON_HOME=$HADOOP_HOME</span><br><span class="line">export HADOOP_HDFS_HOME=$HADOOP_HOME</span><br><span class="line">export HADOOP_YARN_HOME=$HADOOP_HOME</span><br><span class="line">export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native</span><br><span class="line">export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin</span><br><span class="line">export HADOOP_OPTS=&quot;-Djava.library.path=$HADOOP_HOME/lib/native&quot;</span><br></pre></td></tr></table></figure>
+
+<p>保存并退出，然后激活环境变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source ~/.bashrc </span><br></pre></td></tr></table></figure>
+
+<p>紧接着，打开 Hadoop 环境变量配置文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim $HADOOP_HOME/etc/hadoop/hadoop-env.sh </span><br></pre></td></tr></table></figure>
+
+<p>在其中设置 Java 环境变量，文件尾加入下列语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64</span><br></pre></td></tr></table></figure>
+
+<p>保存并退出。</p>
+<h4 id="第五步-配置-Hadoop"><a href="#第五步-配置-Hadoop" class="headerlink" title="第五步 - 配置 Hadoop"></a>第五步 - 配置 Hadoop</h4><p>首先，需要在 Hadoop 主目录中创建 namenode 和 datanode 目录:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p ~/hadoopdata/hdfs/namenode </span><br><span class="line">mkdir -p ~/hadoopdata/hdfs/datanode </span><br></pre></td></tr></table></figure>
+
+<p>接着，编辑 <strong>core-site.xml</strong> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim $HADOOP_HOME/etc/hadoop/core-site.xml </span><br></pre></td></tr></table></figure>
+
+<p>编辑以下配置项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;hdfs://localhost:9000&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p>接着，编辑 <strong>hdfs-site.xml</strong> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim $HADOOP_HOME/etc/hadoop/hdfs-site.xml </span><br></pre></td></tr></table></figure>
+
+<p>编辑以下配置项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line"> </span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;dfs.replication&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;1&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line"> </span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;dfs.name.dir&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;file:///home/hadoop/hadoopdata/hdfs/namenode&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line"> </span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;dfs.data.dir&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;file:///home/hadoop/hadoopdata/hdfs/datanode&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p>接着，编辑 <strong>mapred-site.xml</strong> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim $HADOOP_HOME/etc/hadoop/mapred-site.xml </span><br></pre></td></tr></table></figure>
+
+<p>编辑以下配置项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;mapreduce.framework.name&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;yarn&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p>接着，编辑 <strong>yarn-site.xml</strong> 文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim $HADOOP_HOME/etc/hadoop/yarn-site.xml </span><br></pre></td></tr></table></figure>
+
+<p>编辑以下配置项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">        &lt;property&gt;</span><br><span class="line">                &lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;</span><br><span class="line">                &lt;value&gt;mapreduce_shuffle&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+
+<p>保存并退出。</p>
+<h4 id="第六步-启动-Hadoop-Cluster"><a href="#第六步-启动-Hadoop-Cluster" class="headerlink" title="第六步 - 启动 Hadoop Cluster"></a>第六步 - 启动 Hadoop Cluster</h4><p>输入以下命令格式化 hadoop Namenode：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs namenode -format </span><br></pre></td></tr></table></figure>
+
+<p>当输出如下时成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">2022-04-18 08:57:22,226 INFO namenode.NameNode: SHUTDOWN_MSG: </span><br><span class="line">/************************************************************</span><br><span class="line">SHUTDOWN_MSG: Shutting down NameNode at vultr/127.0.1.1</span><br><span class="line">************************************************************/</span><br></pre></td></tr></table></figure>
+
+<p>格式化 Namenode 后，输入下列命令启动 hadoop 集群：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>关闭服务的命令是 <code>stop-dfs.sh</code></p>
+</blockquote>
+<p>成功后，应该会有以下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Starting namenodes on [localhost]</span><br><span class="line">Starting datanodes</span><br><span class="line">Starting secondary namenodes [vultr]</span><br></pre></td></tr></table></figure>
+
+<p>接着，启动 yarn 服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-yarn.sh </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>关闭服务的命令是 <code>stop-yarn.sh </code></p>
+</blockquote>
+<p>应该会得到以下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Starting resourcemanager</span><br><span class="line">Starting nodemanagers</span><br></pre></td></tr></table></figure>
+
+<p>接着，输入以下命令检查 hadoop 服务是否成功启动：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
+
+<p>应该会得到以下输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">2665498 SecondaryNameNode</span><br><span class="line">2666333 Jps</span><br><span class="line">2665917 NodeManager</span><br><span class="line">2665743 ResourceManager</span><br><span class="line">2665055 NameNode</span><br><span class="line">2665251 DataNode</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2022/04/18/4sFOCwP8nTuMhzt.png" alt="image-20220418173415785"></p>
+<h4 id="第七步-设置防火墙"><a href="#第七步-设置防火墙" class="headerlink" title="第七步 - 设置防火墙"></a>第七步 - 设置防火墙</h4><p>Hadoop 现在已经在运行并且监听端口 9870 和端口 8088，接着开放 TCP 端口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">iptables -I INPUT -p tcp --dport 9870 -j ACCEPT</span><br><span class="line">iptables -I INPUT -p tcp --dport 8088 -j ACCEPT</span><br><span class="line">iptables-save</span><br></pre></td></tr></table></figure>
+
+<p>接着，持久化防火墙设置以更新：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install iptables-persistent</span><br><span class="line">service iptables-persistent save</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="第八步-通过浏览器访问-Hadoop-Namenode"><a href="#第八步-通过浏览器访问-Hadoop-Namenode" class="headerlink" title="第八步 - 通过浏览器访问 Hadoop Namenode"></a>第八步 - 通过浏览器访问 Hadoop Namenode</h4><p>服务器 ip 为 <code>101.42.117.143</code>，在浏览器中访问以下地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">101.42.117.143:9870</span><br></pre></td></tr></table></figure>
+
+<p>有如下信息：</p>
+<p><img src="https://s2.loli.net/2022/04/18/1zKbkDYGO4sM8PI.png" alt="image-20220418174621473"></p>
+<p>说明环境配置成功。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/blog.github.io/2022/04/11/docker%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" rel="prev" title="Docker 配置过程">
+      <i class="fa fa-chevron-left"></i> Docker 配置过程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hadoop-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.</span> <span class="nav-text">Hadoop 环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Linux-%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">Linux 环境</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%AE%89%E8%A3%85-Java"><span class="nav-number">1.2.</span> <span class="nav-text">第一步 - 安装 Java</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E5%88%9B%E5%BB%BA-Hadoop-%E7%94%A8%E6%88%B7"><span class="nav-number">1.3.</span> <span class="nav-text">第二步 - 创建 Hadoop 用户</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5-%E9%85%8D%E7%BD%AE%E5%9F%BA%E4%BA%8E-SSH-%E5%AF%86%E9%92%A5%E7%9A%84%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81"><span class="nav-number">1.4.</span> <span class="nav-text">第三步 - 配置基于 SSH 密钥的身份验证</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5-%E5%AE%89%E8%A3%85-Hadoop"><span class="nav-number">1.5.</span> <span class="nav-text">第四步 - 安装 Hadoop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5-%E9%85%8D%E7%BD%AE-Hadoop"><span class="nav-number">1.6.</span> <span class="nav-text">第五步 - 配置 Hadoop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%85%AD%E6%AD%A5-%E5%90%AF%E5%8A%A8-Hadoop-Cluster"><span class="nav-number">1.7.</span> <span class="nav-text">第六步 - 启动 Hadoop Cluster</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%83%E6%AD%A5-%E8%AE%BE%E7%BD%AE%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">1.8.</span> <span class="nav-text">第七步 - 设置防火墙</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%85%AB%E6%AD%A5-%E9%80%9A%E8%BF%87%E6%B5%8F%E8%A7%88%E5%99%A8%E8%AE%BF%E9%97%AE-Hadoop-Namenode"><span class="nav-number">1.9.</span> <span class="nav-text">第八步 - 通过浏览器访问 Hadoop Namenode</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Zhou Jin</p>
+  <div class="site-description" itemprop="description">View my github at @https://github.com/roomdestroyer</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/blog.github.io/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zhou Jin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/blog.github.io/lib/anime.min.js"></script>
+  <script src="/blog.github.io/lib/velocity/velocity.min.js"></script>
+  <script src="/blog.github.io/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/blog.github.io/js/utils.js"></script>
+
+<script src="/blog.github.io/js/motion.js"></script>
+
+
+<script src="/blog.github.io/js/schemes/muse.js"></script>
+
+
+<script src="/blog.github.io/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script src="/blog.github.io/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","tagMode":false,"log":false,"model":{"jsonPath":"/blog.github.io/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"react":{"opacity":0.7}});</script></body>
+</html>
