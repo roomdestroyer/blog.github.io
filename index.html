@@ -147,6 +147,106 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/30/VMWare%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog.github.io/2022/04/30/VMWare%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">VMWare 配置过程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-30 11:21:24 / Modified: 23:06:41" itemprop="dateCreated datePublished" datetime="2022-04-30T11:21:24+08:00">2022-04-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <hr>
+<h1 id="一、VMware虚拟机安装"><a href="#一、VMware虚拟机安装" class="headerlink" title="一、VMware虚拟机安装"></a>一、VMware<a target="_blank" rel="noopener" href="https://so.csdn.net/so/search?q=%E8%99%9A%E6%8B%9F%E6%9C%BA&spm=1001.2101.3001.7020">虚拟机</a>安装</h1><p>示例：pandas 是基于NumPy 的一种工具，该工具是为了解决数据分析任务而创建的。</p>
+<h2 id="1-基础介绍"><a href="#1-基础介绍" class="headerlink" title="1.基础介绍"></a>1.基础介绍</h2><p>VMWare虚拟机软件是一个“虚拟PC”软件，它使你可以在一台机器上同时运行二个或更多Windows、DOS、LINUX系统。与“多启动”系统相比，VMWare采用了完全不同的概念。多启动系统在一个时刻只能运行一个系统，在系统切换时需要重新启动机器。</p>
+<h2 id="2-准备工作"><a href="#2-准备工作" class="headerlink" title="2.准备工作"></a>2.准备工作</h2><p>VMWare版本：<a target="_blank" rel="noopener" href="https://customerconnect.vmware.com/cn/downloads/details?downloadGroup=WKST-1557-WIN&productId=799&rPId=55775">VMware-workstation-full-15.5.7-17171714</a><br> <img src="https://img-blog.csdnimg.cn/2ff1243b81c44a02a86a73ff44d4582e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBATG9uZ-S4tum-mQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="vm下载"></p>
+<h1 id="二、VMware虚拟网络配置"><a href="#二、VMware虚拟网络配置" class="headerlink" title="二、VMware虚拟网络配置"></a>二、VMware虚拟网络配置</h1><h2 id="1-NAT模式"><a href="#1-NAT模式" class="headerlink" title="1.NAT模式"></a>1.NAT模式</h2><p>NAT全称Network Address Translation网络地址转换，顾名思义，配置的重点也是地址转换。</p>
+<ol>
+<li><p>配置虚拟机的“虚拟网络编辑器”<br> <img src="https://img-blog.csdnimg.cn/5c868255650d4c4498a9f64425ed215d.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBATG9uZ-S4tum-mQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="配置虚拟机的“虚拟网络编辑器”"></p>
+</li>
+<li><p>选中VMnet8选项<br> <img src="https://img-blog.csdnimg.cn/1f6ca3794ad14e268710776fdb61e12f.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBATG9uZ-S4tum-mQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="VMnet8选项"></p>
+</li>
+<li><p>依次设置<br> <img src="https://img-blog.csdnimg.cn/eeadad217170401288b7b5a7bd708bbb.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBATG9uZ-S4tum-mQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="设置选项"><br> 图示说明：<br> (1) 采用nat方式要配置VMnet8，这个虚拟网卡是专用nat方式连网的，其他网卡不管。<br> (2) 对NAT的配置<br> <img src="https://img-blog.csdnimg.cn/1a99b3655f3e48d18b339b328a09d338.png#pic_center" alt="虚拟网关"></p>
+<blockquote>
+<p>这个网关设置是指虚拟机在主机建立了一个虚拟网关，方便虚拟机路由到外网.<code>由于子网段选择了40所以这里也是,你们设置为自己的网段，另外网关ip为2，记住！其他不用设置ok保存退出。</code></p>
+</blockquote>
+</li>
+<li><p>设置主机VMnet8的IP</p>
+<blockquote>
+<p>打开Windows设置 -&gt; 网络和Internet -&gt; 更改适配器 -&gt; VMnet8 -&gt; 属性 -&gt; Internet协议版本4(TCP&#x2F;IPv4)</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/401ae75c3bdc437e935ae08d2a03d38e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBATG9uZ-S4tum-mQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="更改适配器选着"></p>
+<p><img src="https://s2.loli.net/2022/04/30/L3CBKNjSJWrxH4d.png" alt="选择vmnet8"></p>
+<p><img src="https://s2.loli.net/2022/04/30/1FHNYTdMOGnyVeI.png" alt="网关设置"></p>
+</li>
+</ol>
+<blockquote>
+<p>注意1：虚拟机局域网IP段一定不要和真实使用的IP段冲突。<br>注意2：本地电脑VMnet8网卡IP段必须与虚拟机局域网Ip端相同</p>
+</blockquote>
+<h1 id="三、CentOS中的配置"><a href="#三、CentOS中的配置" class="headerlink" title="三、CentOS中的配置"></a>三、CentOS中的配置</h1><blockquote>
+<p>我用的是CentOS8，有些命令可能不同，请各位自行搜索命令</p>
+</blockquote>
+<h4 id="1-更改CentOS系统网卡的IP配置"><a href="#1-更改CentOS系统网卡的IP配置" class="headerlink" title="1.更改CentOS系统网卡的IP配置"></a>1.更改CentOS系统网卡的IP配置</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysconfig/network-scripts/ifcfg-ens33</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#修改如下网络配置</span><br><span class="line">ONBOOT=yes  #系统启动时激活网卡</span><br><span class="line">BOOTPROTO=&quot;static&quot; #以静态方式获取IP</span><br><span class="line">IPADDR=192.168.40.10 #IP地址为192.168.40.10（192.168.40.0网段内，此IP是虚拟机的IP）</span><br><span class="line">NETMASK=255.255.255.0 #设置子网掩码</span><br><span class="line">GATEWAY=192.168.40.2 #网关需要与IP在一个网段内</span><br><span class="line">DNS1=192.168.40.2 #同网关</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-重启网卡"><a href="#2-重启网卡" class="headerlink" title="2.重启网卡"></a>2.重启网卡</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nmcli c reload</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-再次输入ifconfig，就会看到你输入的ip地址了"><a href="#3-再次输入ifconfig，就会看到你输入的ip地址了" class="headerlink" title="3.再次输入ifconfig，就会看到你输入的ip地址了"></a>3.再次输入ifconfig，就会看到你输入的ip地址了</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">这时在主机上或者是在虚拟机上去ping IP地址，能ping通就表示设置成功了</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/18/Hadoop%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1267,7 +1367,7 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/blog.github.io/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
