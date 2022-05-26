@@ -147,6 +147,282 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/05/25/Nginx+Tomcat%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog.github.io/images/avatar.gif">
+      <meta itemprop="name" content="Zhou Jin">
+      <meta itemprop="description" content="View my github at @https://github.com/roomdestroyer">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Zhou Jin's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/blog.github.io/2022/05/25/Nginx+Tomcat%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/" class="post-title-link" itemprop="url">Nginx+Tomcat实现负载均衡</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-25 21:17:46" itemprop="dateCreated datePublished" datetime="2022-05-25T21:17:46+08:00">2022-05-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-05-27 02:59:53" itemprop="dateModified" datetime="2022-05-27T02:59:53+08:00">2022-05-27</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Nginx-Tomcat-实现负载均衡"><a href="#Nginx-Tomcat-实现负载均衡" class="headerlink" title="Nginx + Tomcat 实现负载均衡"></a>Nginx + Tomcat 实现负载均衡</h1><h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Linux version:  5.4.0-96-generic</span><br><span class="line">OS Version:     ubuntu1~20.04</span><br><span class="line">Architecture:   amd64</span><br><span class="line">Nginx version:  nginx/1.18.0 (Ubuntu)</span><br><span class="line">JVM Version:    11.0.15+10-Ubuntu-0ubuntu0.20.04.1</span><br><span class="line">Tomcat Version: Apache Tomcat/9.0.63</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="2-安装"><a href="#2-安装" class="headerlink" title="2. 安装"></a>2. 安装</h2><h3 id="2-1-安装-Nginx"><a href="#2-1-安装-Nginx" class="headerlink" title="2.1 安装 Nginx"></a>2.1 安装 Nginx</h3><p>在命令行输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
+
+<p>测试命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nginx -t</span><br></pre></td></tr></table></figure>
+
+<p>窗口显示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok</span><br><span class="line">nginx: configuration file /etc/nginx/nginx.conf test is successful</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器输入服务器 ip：</p>
+<p><img src="https://s2.loli.net/2022/05/25/YhJTEsLDv8x1BkN.png" alt="image-20220525212228322"></p>
+<h3 id="2-2-安装-Java"><a href="#2-2-安装-Java" class="headerlink" title="2.2 安装 Java"></a>2.2 安装 Java</h3><p>安装 jdk：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get -y install openjdk-11-jdk</span><br></pre></td></tr></table></figure>
+
+<p>查看版本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java --version</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">openjdk 11.0.15 2022-04-19</span><br><span class="line">OpenJDK Runtime Environment (build 11.0.15+10-Ubuntu-0ubuntu0.20.04.1)</span><br><span class="line">OpenJDK 64-Bit Server VM (build 11.0.15+10-Ubuntu-0ubuntu0.20.04.1, mixed mode, sharing)</span><br></pre></td></tr></table></figure>
+
+<p>安装成功。</p>
+<p>查看 Java 的安装位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --config java</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">There is only one alternative in link group java (providing /usr/bin/java): /usr/lib/jvm/java-11-openjdk-amd64/bin/java</span><br></pre></td></tr></table></figure>
+
+<p>将 $JAVA_HOME 添加到环境变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo vim $HOME/.bashrc</span><br><span class="line">shift+G</span><br></pre></td></tr></table></figure>
+
+<p>在行尾添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64</span><br><span class="line">export PATH=$PATH:$JAVA_HOME</span><br></pre></td></tr></table></figure>
+
+<p>退出 <code>vim</code> ，激活环境变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">source $HOME/.bashrc</span><br></pre></td></tr></table></figure>
+
+<p>验证环境变量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo $JAVA_HOME</span><br></pre></td></tr></table></figure>
+
+<p>输出如下，激活成功。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/lib/jvm/java-11-openjdk-amd64</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-3-安装-Tomcat"><a href="#2-3-安装-Tomcat" class="headerlink" title="2.3 安装 Tomcat"></a>2.3 安装 Tomcat</h3><p>官网下载的 <code>Tomcat 9.0.63</code>，注意需为 <code>Core/tar.gz(pgp, sha512)</code> 版本，或 <a target="_blank" rel="noopener" href="https://bucket011.obs.cn-north-4.myhuaweicloud.com:443/apache-tomcat-9.0.63.tar.gz?AccessKeyId=S3NBXULCUVSGOWLC75R3&Expires=1684599167&Signature=XI0c%2BNskc/yf%2BTBPgBEbnSt%2BNs0%3D">点此下载</a> ，将文件上传到服务器中的路径 <code>/usr/local</code> 下，输入下列命令解压：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local &amp;&amp; tar -zxvf apache-tomcat-9.0.63.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>配置环境变量，打开 <code>Tomcat</code> 启动脚本：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd apache-tomcat-9.0.63 &amp;&amp; vim bin/startup.sh</span><br><span class="line">shift+G</span><br></pre></td></tr></table></figure>
+
+<p>在语句 <code>exec &quot;$PRGDIR&quot;/&quot;$EXECUTABLE&quot; start &quot;$@&quot;</code> 的上一行插入下列语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64</span><br><span class="line">JRE_HOME=$JAVA_HOME/jre</span><br><span class="line">PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME</span><br><span class="line">CLASSPATH=.:$JRE_HOME/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span><br><span class="line">TOMCAT_HOME=/usr/local/apache-tomcat-9.0.63</span><br></pre></td></tr></table></figure>
+
+<p>保存并退出。</p>
+<p>开放服务器的 <code>8080</code> 端口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=8080/tcp --permanent</span><br></pre></td></tr></table></figure>
+
+<p>重启防火墙</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
+
+<p>去云服务器管理控制台添加安全组：</p>
+<p><img src="https://s2.loli.net/2022/05/26/oLmy6BXbPAI4wf5.png" alt="image-20220525234438235"></p>
+<p>运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bin/shutdown.sh &amp;&amp; rm -rf logs/catalina.out &amp;&amp; ./bin/startup.sh ; tail -f logs/catalina.out</span><br></pre></td></tr></table></figure>
+
+<p>输出应该如下所示：</p>
+<p><img src="https://s2.loli.net/2022/05/26/JtmZ4eRK3hX8sf1.png" alt="image-20220526002554379"></p>
+<p>在浏览器访问 <code>$ip:8080</code>，显示：</p>
+<p><img src="https://s2.loli.net/2022/05/26/iEMRucdl8Ws7oGq.png" alt="image-20220526002245669"></p>
+<p>说明你配置成功。</p>
+<h2 id="3-部署"><a href="#3-部署" class="headerlink" title="3. 部署"></a>3. 部署</h2><h3 id="3-1-Tomcat-服务器部署"><a href="#3-1-Tomcat-服务器部署" class="headerlink" title="3.1 Tomcat 服务器部署"></a>3.1 Tomcat 服务器部署</h3><p>本实验需要使用 3 个端口，分别使用 <code>8001</code>，<code>8082</code>，<code>8083</code>，在腾讯云控制台开放端口后，在 <code>shell</code> 中手动开放端口并重启防火墙：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=8081/tcp --permanent</span><br><span class="line">firewall-cmd --zone=public --add-port=8082/tcp --permanent</span><br><span class="line">firewall-cmd --zone=public --add-port=8083/tcp --permanent</span><br><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
+
+<p>我们使用 <code>Tomcat</code> 自带的 <code>3</code> 个 <code>Web</code> 项目来实现不同的端口访问不同的应用，假设你完全按照上文的方式操作，那么此时你的 <code>Tomcat</code> 为 <code>/usr/local/apache-tomcat-9.0.63</code>，根据根路径打开服务器的配置文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/apache-tomcat-9.0.63/conf &amp;&amp; vim server.xml</span><br></pre></td></tr></table></figure>
+
+<p>删除掉原代码，换成以下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;Server port=&quot;8005&quot; shutdown=&quot;SHUTDOWN&quot;&gt;</span><br><span class="line">     &lt;Listener className=&quot;org.apache.catalina.startup.VersionLoggerListener&quot; /&gt;</span><br><span class="line">     &lt;Listener className=&quot;org.apache.catalina.core.AprLifecycleListener&quot; SSLEngine=&quot;on&quot; /&gt;</span><br><span class="line">     &lt;Listener className=&quot;org.apache.catalina.core.JreMemoryLeakPreventionListener&quot; /&gt;</span><br><span class="line">     &lt;Listener className=&quot;org.apache.catalina.mbeans.GlobalResourcesLifecycleListener&quot; /&gt;</span><br><span class="line">     &lt;Listener className=&quot;org.apache.catalina.core.ThreadLocalLeakPreventionListener&quot; /&gt;</span><br><span class="line">     &lt;GlobalNamingResources&gt;</span><br><span class="line">     &lt;Resource name=&quot;UserDatabase&quot; auth=&quot;Container&quot;</span><br><span class="line">               type=&quot;org.apache.catalina.UserDatabase&quot;</span><br><span class="line">               description=&quot;User database that can be updated and saved&quot;</span><br><span class="line">               factory=&quot;org.apache.catalina.users.MemoryUserDatabaseFactory&quot;</span><br><span class="line">               pathname=&quot;conf/tomcat-users.xml&quot; /&gt;</span><br><span class="line">     &lt;/GlobalNamingResources&gt;</span><br><span class="line"></span><br><span class="line">     &lt;Service name=&quot;Catalina&quot;&gt;</span><br><span class="line">          &lt;Connector port=&quot;8081&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">                    connectionTimeout=&quot;20000&quot;</span><br><span class="line">                    redirectPort=&quot;8443&quot; /&gt;</span><br><span class="line">               &lt;Engine name=&quot;Catalina&quot; defaultHost=&quot;localhost&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.LockOutRealm&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;</span><br><span class="line">                         resourceName=&quot;UserDatabase&quot;/&gt;</span><br><span class="line">                    &lt;/Realm&gt;</span><br><span class="line">                    &lt;Host name=&quot;localhost&quot;  appBase=&quot;webapps&quot;</span><br><span class="line">                         unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&gt;</span><br><span class="line">                         &lt;Context path=&quot;&quot; docBase=&quot;ROOT&quot; reloadable=&quot;true&quot; /&gt;</span><br><span class="line">                         &lt;Valve className=&quot;org.apache.catalina.valves.AccessLogValve&quot; directory=&quot;logs&quot;</span><br><span class="line">                              prefix=&quot;localhost_access_log&quot; suffix=&quot;.txt&quot;</span><br><span class="line">                              pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;</span><br><span class="line">                    &lt;/Host&gt;</span><br><span class="line">               &lt;/Engine&gt;</span><br><span class="line">     &lt;/Service&gt;</span><br><span class="line"></span><br><span class="line">     &lt;Service name=&quot;Catalina2&quot;&gt;</span><br><span class="line">          &lt;Connector port=&quot;8082&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">                    connectionTimeout=&quot;20000&quot;</span><br><span class="line">                    redirectPort=&quot;8443&quot; /&gt;</span><br><span class="line">               &lt;Engine name=&quot;Catalina2&quot; defaultHost=&quot;localhost&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.LockOutRealm&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;</span><br><span class="line">                         resourceName=&quot;UserDatabase&quot;/&gt;</span><br><span class="line">                    &lt;/Realm&gt;</span><br><span class="line">                    &lt;Host name=&quot;localhost&quot;  appBase=&quot;webapps&quot;</span><br><span class="line">                         unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&gt;</span><br><span class="line">                         &lt;Context path=&quot;&quot; docBase=&quot;examples&quot; reloadable=&quot;true&quot; /&gt;</span><br><span class="line">                         &lt;Valve className=&quot;org.apache.catalina.valves.AccessLogValve&quot; directory=&quot;logs&quot;</span><br><span class="line">                              prefix=&quot;localhost_access_log&quot; suffix=&quot;.txt&quot;</span><br><span class="line">                              pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;</span><br><span class="line">                    &lt;/Host&gt;</span><br><span class="line">               &lt;/Engine&gt;</span><br><span class="line">     &lt;/Service&gt;</span><br><span class="line"></span><br><span class="line">     &lt;Service name=&quot;Catalina3&quot;&gt;</span><br><span class="line">          &lt;Connector port=&quot;8083&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">                    connectionTimeout=&quot;20000&quot;</span><br><span class="line">                    redirectPort=&quot;8443&quot; /&gt;</span><br><span class="line">               &lt;Engine name=&quot;Catalina3&quot; defaultHost=&quot;localhost&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.LockOutRealm&quot;&gt;</span><br><span class="line">                    &lt;Realm className=&quot;org.apache.catalina.realm.UserDatabaseRealm&quot;</span><br><span class="line">                         resourceName=&quot;UserDatabase&quot;/&gt;</span><br><span class="line">                    &lt;/Realm&gt;</span><br><span class="line">                    &lt;Host name=&quot;localhost&quot;  appBase=&quot;webapps&quot;</span><br><span class="line">                         unpackWARs=&quot;true&quot; autoDeploy=&quot;true&quot;&gt;</span><br><span class="line">                         &lt;Context path=&quot;&quot; docBase=&quot;examples/websocket&quot; reloadable=&quot;true&quot; /&gt;</span><br><span class="line">                         &lt;Valve className=&quot;org.apache.catalina.valves.AccessLogValve&quot; directory=&quot;logs&quot;</span><br><span class="line">                              prefix=&quot;localhost_access_log&quot; suffix=&quot;.txt&quot;</span><br><span class="line">                              pattern=&quot;%h %l %u %t &amp;quot;%r&amp;quot; %s %b&quot; /&gt;</span><br><span class="line">                    &lt;/Host&gt;</span><br><span class="line">               &lt;/Engine&gt;</span><br><span class="line">     &lt;/Service&gt;</span><br><span class="line">&lt;/Server&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这样，通过 <code>$ip:8081</code>、<code>$ip:8082</code>、<code>$ip:8083</code> 分别访问就可以得到不同的服务端。</p>
+<blockquote>
+<p>8083 端口的资源不完整，因为 Tomcat 默认只提供了 2 个有效的 app，第三个端口会返回一个 404 页面，某种程度上它也是一个应用。</p>
+</blockquote>
+<h3 id="3-2-Nginx-反向代理"><a href="#3-2-Nginx-反向代理" class="headerlink" title="3.2 Nginx 反向代理"></a>3.2 Nginx 反向代理</h3><p>编辑 <code>nginx.conf</code> 配置文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
+
+<p>将下列语句插入到模块 <code>http</code> 的末尾：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 101.42.117.143:8081;</span><br><span class="line">    server 101.42.117.143:8082;</span><br><span class="line">    server 101.42.117.143:8083;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 101.42.117.143;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://tomcat_server;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>启动或重启 <code>nginx</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx 或 nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>这样，可以直接访问 <code>80</code> 端口，或 <code>$ip</code> 后将其代理到后端的 3 台服务器上。</p>
+<blockquote>
+<p>nginx 默认采用轮询策略。</p>
+</blockquote>
+<h2 id="4-负载均衡"><a href="#4-负载均衡" class="headerlink" title="4. 负载均衡"></a>4. 负载均衡</h2><h3 id="4-1-轮询"><a href="#4-1-轮询" class="headerlink" title="4.1 轮询"></a>4.1 轮询</h3><p>轮询策略 <code>nginx.conf</code> 的配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 101.42.117.143:8081 weight=1;</span><br><span class="line">    server 101.42.117.143:8082 weight=1;</span><br><span class="line">    server 101.42.117.143:8083 weight=1;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 101.42.117.143;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://tomcat_server;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启 <code>nginx</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>postman</code> 频繁访问，页面出现的频率是 <code>ABC ABC ABC ABC</code>。</p>
+<h3 id="4-2-加权轮询"><a href="#4-2-加权轮询" class="headerlink" title="4.2 加权轮询"></a>4.2 加权轮询</h3><p>加权轮询策略 <code>nginx.conf</code> 的配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 101.42.117.143:8081 weight=1;</span><br><span class="line">    server 101.42.117.143:8082 weight=3;</span><br><span class="line">    server 101.42.117.143:8083 weight=5;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 101.42.117.143;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://tomcat_server;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启 <code>nginx</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>使用 <code>postman</code> 频繁访问，页面出现的频率是 <code>CBCACBCBC CBCACBCBC</code>。</p>
+<p>该算法称为提案者轮换选择算法，每一轮都会将被选中的对象减去总权重值，每一轮都会将各结点的权重值加上固定的预设权重值，这是一个公平的轮换算法，可以防止权重过大的结点持续占据资源。过程如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">初始权重</th>
+<th align="center">加权</th>
+<th align="center">选择</th>
+<th align="center">选中者减去权重和</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0 0 0</td>
+<td align="center">1 3 5</td>
+<td align="center">C</td>
+<td align="center">1 3 -4</td>
+</tr>
+<tr>
+<td align="center">1 3 -4</td>
+<td align="center">2 6 1</td>
+<td align="center">B</td>
+<td align="center">2 -3 1</td>
+</tr>
+<tr>
+<td align="center">2 -3 1</td>
+<td align="center">3 0 6</td>
+<td align="center">C</td>
+<td align="center">3 0 -3</td>
+</tr>
+<tr>
+<td align="center">3 0 -3</td>
+<td align="center">4 3 2</td>
+<td align="center">A</td>
+<td align="center">-5 3 2</td>
+</tr>
+<tr>
+<td align="center">-5 3 2</td>
+<td align="center">-4 6 7</td>
+<td align="center">C</td>
+<td align="center">-4 6 -2</td>
+</tr>
+<tr>
+<td align="center">-4 6 -2</td>
+<td align="center">-3 9 3</td>
+<td align="center">B</td>
+<td align="center">-3 0 3</td>
+</tr>
+<tr>
+<td align="center">-3 0 3</td>
+<td align="center">-2 3 8</td>
+<td align="center">C</td>
+<td align="center">-2 3 -1</td>
+</tr>
+<tr>
+<td align="center">-2 3 -1</td>
+<td align="center">-1 6 4</td>
+<td align="center">B</td>
+<td align="center">-1 -3 4</td>
+</tr>
+<tr>
+<td align="center">-1 -3 4</td>
+<td align="center">0 0 9</td>
+<td align="center">C</td>
+<td align="center">0 0 0</td>
+</tr>
+<tr>
+<td align="center">0 0 0</td>
+<td align="center">1 3 5</td>
+<td align="center">C</td>
+<td align="center">1 3 -4</td>
+</tr>
+<tr>
+<td align="center">1 3 -4</td>
+<td align="center">2 6 1</td>
+<td align="center">B</td>
+<td align="center">2 -3 1</td>
+</tr>
+<tr>
+<td align="center">2 -3 1</td>
+<td align="center">3 0 6</td>
+<td align="center">C</td>
+<td align="center">3 0 -3</td>
+</tr>
+<tr>
+<td align="center">……</td>
+<td align="center">……</td>
+<td align="center">……</td>
+<td align="center">……</td>
+</tr>
+</tbody></table>
+<h3 id="4-2-IP-Hash"><a href="#4-2-IP-Hash" class="headerlink" title="4.2 IP Hash"></a>4.2 IP Hash</h3><p>轮询策略 <code>nginx.conf</code> 的配置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 101.42.117.143:8081;</span><br><span class="line">    server 101.42.117.143:8082;</span><br><span class="line">    server 101.42.117.143:8083;</span><br><span class="line">    ip_hash;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 101.42.117.143;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://tomcat_server;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重启 <code>nginx</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<p>它会将主机的 <code>$ip</code> 哈希映射到一个随机的固定值，然后对 <code>3</code> 取模得到响应的端口序号；</p>
+<p>使用主机 1 的 <code>postman</code> 频繁访问，页面出现的频率是 <code>AAAAAA</code>；</p>
+<p>使用主机 2 的 <code>postman</code> 频繁访问，页面出现的频率是 <code>BBBBBB</code>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="https://github.com/roomdestroyer/2022/04/30/VMWare%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1367,7 +1643,7 @@ end
       <div class="site-state-item site-state-posts">
           <a href="/blog.github.io/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
