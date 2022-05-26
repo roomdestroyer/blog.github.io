@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://s2.loli.net/2022/05/26/JtmZ4eRK3hX8sf1.png">
 <meta property="og:image" content="https://s2.loli.net/2022/05/26/iEMRucdl8Ws7oGq.png">
 <meta property="article:published_time" content="2022-05-25T13:17:46.000Z">
-<meta property="article:modified_time" content="2022-05-26T18:59:53.390Z">
+<meta property="article:modified_time" content="2022-05-26T19:17:23.725Z">
 <meta property="article:author" content="Zhou Jin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://s2.loli.net/2022/05/25/YhJTEsLDv8x1BkN.png">
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-05-27 02:59:53" itemprop="dateModified" datetime="2022-05-27T02:59:53+08:00">2022-05-27</time>
+                <time title="Modified: 2022-05-27 03:17:23" itemprop="dateModified" datetime="2022-05-27T03:17:23+08:00">2022-05-27</time>
               </span>
 
           
@@ -402,7 +402,7 @@
 <td align="center">……</td>
 </tr>
 </tbody></table>
-<h3 id="4-2-IP-Hash"><a href="#4-2-IP-Hash" class="headerlink" title="4.2 IP Hash"></a>4.2 IP Hash</h3><p>轮询策略 <code>nginx.conf</code> 的配置如下：</p>
+<h3 id="4-2-IP-Hash"><a href="#4-2-IP-Hash" class="headerlink" title="4.2 IP Hash"></a>4.2 IP Hash</h3><p><code>IP Hash</code> 策略 <code>nginx.conf</code> 的配置如下：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcat_server &#123;</span><br><span class="line">    server 101.42.117.143:8081;</span><br><span class="line">    server 101.42.117.143:8082;</span><br><span class="line">    server 101.42.117.143:8083;</span><br><span class="line">    ip_hash;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name 101.42.117.143;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://tomcat_server;</span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>重启 <code>nginx</code>：</p>
